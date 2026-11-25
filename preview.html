@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="pt"><head><meta charset="utf-8"><title>hOn dishwasher card – pré-visualização</title>
+<style>
+  body { background:#111; color:#ddd; font-family:system-ui,sans-serif; margin:20px; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:16px; align-items:start; }
+  h3 { margin:0 0 6px; font-size:13px; color:#888; font-weight:500; }
+</style>
+<script type="module" src="./hon-dishwasher-card.js"></script>
+</head><body>
+<div class="grid" id="g"></div>
+<script type="module">
+  // a fake Home Assistant: just enough of `hass` for the cards
+  const P = "maquina_loica", now = Date.now(), iso = t => new Date(t).toISOString();
+  const names = { eco: "Eco 45°C", auto_universal: "Auto Universal 50-60°C", intensive: "Intensiva", rapid_29: "Rápido 29' 50°C", glass_care: "Vidro delicados", iot_baby_care: "Cuidados Bébé" };
+  const scen = {
+    "A lavar": { mode: "2", phase: "2", prog: "auto_universal", start: now - 40 * 60e3, end: now + 52 * 60e3, extra_dry: "on" },
+    "A secar": { mode: "2", phase: "4", prog: "eco", start: now - 150 * 60e3, end: now + 25 * 60e3 },
+    "Início diferido": { mode: "3", phase: "0", prog: "intensive", delay: 90, start: NaN, end: now + 210 * 60e3 },
+    "Terminado": { mode: "7", phase: "5", prog: "eco", salt: "on" },
+    "Desligada": { mode: "1", phase: "0", prog: "No program", power: "off", remote: "off" },
+  };
+  const hassFor = s => {
+    const st = (id, state, a = {}) => [id, { entity_id: id, state: String(state), attributes: a, last_changed: iso(now - 60e3), last_updated: iso(now - 30e3) }];
+    const states = Object.fromEntries([
+      st(`binary_sensor.${P}_status`, s.power || "on"),
+      st(`binary_sensor.${P}_remote_control`, s.remote || "on"),
+      st(`binary_sensor.${P}_door_status`, "off"),
+      st(`binary_sensor.${P}_salt`, s.salt || "off"),
+      st(`binary_sensor.${P}_rinse_aid`, "off"),
+      st(`binary_sensor.${P}_extra_dry`, s.extra_dry || "off"),
+      st(`binary_sensor.${P}_half_load`, "off"),
+      st(`sensor.${P}_mode`, s.mode),
+      st(`sensor.${P}_program_phase`, s.phase),
+      st(`sensor.${P}_program_name`, s.prog),
+      st(`sensor.${P}_delay_time`, s.delay || 0),
+      st(`sensor.${P}_remaining_time`, isNaN(s.end ?? NaN) ? 0 : Math.round((s.end - now) / 60e3)),
+      st(`sensor.${P}_start_time`, isNaN(s.start ?? NaN) ? "unknown" : iso(s.start)),
+      st(`sensor.${P}_end_time`, isNaN(s.end ?? NaN) ? "unknown" : iso(s.end)),
+      st(`sensor.${P}_total_wash_cycle`, 412),
+    ]);
+    const entities = {
+      [`sensor.${P}_mode`]: { entity_id: `sensor.${P}_mode`, platform: "hon", translation_key: "dishwasher_mode", device_id: "dev1" },
+      [`binary_sensor.${P}_status`]: { entity_id: `binary_sensor.${P}_status`, platform: "hon", device_id: "dev1" },
+    };
+    return { states, entities, language: "pt", locale: { language: "pt" },
+      formatEntityState: (so, v) => names[v ?? so.state] ?? (v ?? so.state),
+      callService: async (d, s, data) => {
+        console.log("callService", d, s, data);
+        if (data.program === "__list_programmes__")
+          throw new Error("Invalid [Program] value, allowed values [eco, auto_universal, auto_universal_soil, intensive, rapid_29, glass_care, iot_baby_care]");
+      } };
+  };
+  await customElements.whenDefined("hon-dishwasher-card");
+  const g = document.getElementById("g");
+  for (const [t, s] of Object.entries(scen)) {
+    const box = document.createElement("div"); box.innerHTML = `<h3>${t}</h3>`;
+    const card = document.createElement("hon-dishwasher-card");
+    card.setConfig({ name: "Máquina da loiça" });
+    box.append(card); g.append(box); card.hass = hassFor(s);
+  }
+  const box = document.createElement("div"); box.innerHTML = "<h3>Programas</h3>";
+  const pc = document.createElement("hon-dishwasher-programmes-card");
+  pc.setConfig({ name: "Máquina da loiça", favourites: ["eco", "auto_universal", "intensive", "rapid_29"] });
+  box.append(pc); g.append(box); pc.hass = hassFor(scen["Desligada"].mode ? { mode: "1", phase: "0", prog: "eco" } : {});
+</script>
+</body></html>
