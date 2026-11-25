@@ -1,5 +1,15 @@
 # Changelog
 
+## v1.1.1
+
+### Correções
+
+- A opção de abertura da porta no fim do ciclo passa a aparecer como **"Abertura Automática"** (antes "Abertura auto") na linha Opções da carta, em português.
+
+### Depois de atualizar
+
+Recarregue o browser (Ctrl/Cmd + Shift + R). Na app do telemóvel: **Definições da app → Depuração → Limpar cache do frontend**.
+
 ## v1.1.0
 
 ### Novidades

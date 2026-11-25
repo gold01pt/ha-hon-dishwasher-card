@@ -20,7 +20,7 @@ As máquinas de loiça hOn não têm pausa pela integração, por isso não há 
 ## Instalação
 
 1. Copie `hon-dishwasher-card.js` para `config/www/hon-dishwasher-card.js`.
-2. Em **Definições → Painéis → ⋮ → Recursos**, adicione `/local/hon-dishwasher-card.js?v=1.1.0` como **Módulo JavaScript**.
+2. Em **Definições → Painéis → ⋮ → Recursos**, adicione `/local/hon-dishwasher-card.js?v=1.1.1` como **Módulo JavaScript**.
 3. Recarregue o browser (se atualizar o ficheiro, mude o `?v=`).
 
 ## Utilização

@@ -23,7 +23,7 @@
 //   favourites: [eco, auto_universal, ...]     programme keys (hon.start_program "program" values)
 //   programmes: [...]                          full list for "All programmes" (default: read from the machine)
 
-const HDW_VERSION = "1.1.0";
+const HDW_VERSION = "1.1.1";
 
 // ---------------------------------------------------------------------------------------------------------------
 // hOn codes for dishwashers (machMode / prPhase)
@@ -59,7 +59,7 @@ const I18N = {
     "Remote control": "Controlo remoto", "Door open": "Porta aberta", "Door closed": "Porta fechada", "Door locked (cycle running)": "Porta fechada (ciclo em curso)",
     "Salt: refill": "Sal: reabastecer", "Salt OK": "Sal OK", "Rinse aid: refill": "Abrilhantador: reabastecer", "Rinse aid OK": "Abrilhantador OK",
     Programme: "Programa", Status: "Estado", Ends: "Termina", Starts: "Começa", Cycles: "Ciclos", Options: "Opções", End: "Fim",
-    "Extra dry": "Extra secagem", "Half load": "Meia carga", "Eco express": "Eco express", "Auto door": "Abertura auto",
+    "Extra dry": "Extra secagem", "Half load": "Meia carga", "Eco express": "Eco express", "Auto door": "Abertura Automática",
     Dishwasher: "Máquina da loiça", "All programmes": "Todos os programas", "Favourites only": "Só favoritos",
     ask_off: (n, run) => `${n}: desligar?${run ? " Isto para o ciclo atual." : ""}`,
     ask_stop: n => `${n}: parar? Isto cancela o ciclo atual.`,
