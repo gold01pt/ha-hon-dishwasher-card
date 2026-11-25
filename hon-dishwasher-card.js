@@ -24,7 +24,7 @@
 //   favourites: [eco, auto_universal, ...]     programme keys (hon.start_program "program" values)
 //   programmes: [...]                          full list for "All programmes" (default: read from the machine)
 
-const HDW_VERSION = "1.2.0";
+const HDW_VERSION = "1.2.1";
 
 // ---------------------------------------------------------------------------------------------------------------
 // hOn codes for dishwashers (machMode / prPhase)
@@ -223,13 +223,14 @@ ha-card { display:block; background:var(--hon-card-bg,#2a2a2a); border:1px solid
 .off .lcd .t { color:#3a3f46; text-shadow:none; } .fin .lcd .t { color:var(--ok); text-shadow:0 0 4px #5fd38a88; }
 .icon { width:7.2%; aspect-ratio:1; border-radius:50%; display:grid; place-items:center; background:#000a; transform:translate(-50%,-50%); }
 .icon[hidden] { display:none; }
-.icon ha-icon { --mdc-icon-size:68%; width:68%; color:#9a9a9a; display:grid; place-items:center; }
+/* icon sizes in cqw (the picture's width): a % doesn't reach the icon's svg, which then falls back to a small default */
+.icon ha-icon { --mdc-icon-size:4.8cqw; color:#9a9a9a; display:grid; place-items:center; }
 .icon.lit ha-icon { color:var(--c); } .icon.warn ha-icon { color:var(--warn); } .icon.warn { box-shadow:0 0 0 2px #ffb44f66; }
 .mbtn { width:10%; aspect-ratio:1; padding:0; border-radius:50%; display:grid; place-items:center; transform:translate(-50%,-50%); cursor:pointer; z-index:3;
   background:radial-gradient(circle at 35% 30%,#3a3f46,#101214 75%); border:.4cqw solid #ffffff2e; box-shadow:0 .6cqw 1.6cqw #0008, inset 0 .3cqw .6cqw #ffffff1a;
   -webkit-tap-highlight-color:transparent; touch-action:manipulation; transition:transform .15s, box-shadow .2s; }
 .mbtn[hidden] { display:none; }
-.mbtn ha-icon { --mdc-icon-size:58%; width:58%; display:grid; place-items:center; }
+.mbtn ha-icon { --mdc-icon-size:7cqw; display:grid; place-items:center; }
 .mbtn.off ha-icon { color:#ff8a80; } .mbtn.stop ha-icon { color:var(--c); }
 .mbtn:hover { box-shadow:0 .6cqw 1.6cqw #0008, 0 0 0 .5cqw color-mix(in srgb, var(--c) 45%, transparent); }
 .mbtn:active { transform:translate(-50%,-50%) scale(.92); }

@@ -11,7 +11,7 @@
     "mdi:shaker-outline": "🧂", "mdi:water-plus-outline": "💧" };
   customElements.define("ha-icon", class extends HTMLElement {
     static observedAttributes = ["icon"];
-    attributeChangedCallback() { this.textContent = SYM[this.getAttribute("icon")] || "•"; this.style.cssText = "font-size:min(2.2cqw,15px);line-height:1;color:inherit"; }
+    attributeChangedCallback() { this.textContent = SYM[this.getAttribute("icon")] || "•"; this.style.cssText = "font-size:calc(var(--mdc-icon-size,16px) * .8);line-height:1;color:inherit"; }
   });
 </script>
 <script type="module" src="./hon-dishwasher-card.js"></script>

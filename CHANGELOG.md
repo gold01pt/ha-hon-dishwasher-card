@@ -1,5 +1,18 @@
 # Changelog
 
+## v1.2.1
+
+### Correções
+
+- **Ícones maiores nos botões Desligar e Parar:** o símbolo passa a ocupar cerca de 70% do círculo, em vez de ficar minúsculo no centro.
+- **Ícones de estado maiores** (controlo remoto, porta, sal e abrilhantador), pela mesma razão.
+
+O tamanho estava em percentagem, que o ícone do Home Assistant não aplicava, e por isso ficava num tamanho mínimo. Agora acompanha a largura da carta.
+
+### Depois de atualizar
+
+Recarregue o browser (Ctrl/Cmd + Shift + R). Na app do telemóvel: **Definições da app → Depuração → Limpar cache do frontend**.
+
 ## v1.2.0
 
 ### Novidades
