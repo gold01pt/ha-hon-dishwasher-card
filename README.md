@@ -20,7 +20,7 @@ As máquinas de loiça hOn não têm pausa pela integração, por isso não há 
 ## Instalação
 
 1. Copie `hon-dishwasher-card.js` para `config/www/hon-dishwasher-card.js`.
-2. Em **Definições → Painéis → ⋮ → Recursos**, adicione `/local/hon-dishwasher-card.js?v=1.0.0` como **Módulo JavaScript**.
+2. Em **Definições → Painéis → ⋮ → Recursos**, adicione `/local/hon-dishwasher-card.js?v=1.1.0` como **Módulo JavaScript**.
 3. Recarregue o browser (se atualizar o ficheiro, mude o `?v=`).
 
 ## Utilização
@@ -50,7 +50,7 @@ entity: maquina_loica
 | `entity` | ambas | Início dos IDs das entidades (por omissão: encontrada automaticamente, senão `dish_washer`) |
 | `name` | ambas | Título |
 | `colour` | ambas | Cor de destaque, ex. `"#5ab4ff"` |
-| `language` | ambas | `pt` ou `en` (por omissão, a língua do Home Assistant) |
+| `language` | ambas | `pt` ou `en`, seja qual for a língua do Home Assistant (por omissão `auto`: a língua do HA) |
 | `names` | ambas | Os seus nomes para programas, por chave: `iot_eco_bldc: Eco diário` |
 | `max_width` | máquina | Largura máxima, ex. `380px` |
 | `rows` | máquina | Linhas da caixa: `programme`, `status`, `ends`, `options`. Por omissão todas |
@@ -59,9 +59,24 @@ entity: maquina_loica
 | `favourites` | programas | Programas a mostrar como botões (chaves hOn) |
 | `programmes` | programas | Lista completa. Por omissão é lida da máquina |
 
+### Língua
+
+A carta segue a língua do seu perfil no Home Assistant. Para a pôr sempre em português, mesmo com o Home Assistant em inglês, use `language: pt` em cada uma das cartas, ou escolha **Língua da carta → Português** no editor visual da carta:
+
+```yaml
+type: custom:hon-dishwasher-card
+language: pt
+```
+
+Tudo passa para português: estado, fases, botões, perguntas, linhas da caixa e também os **nomes dos programas**. A carta traz a sua própria lista de nomes em português, baseada nas traduções da integração hOn e com as gralhas corrigidas, por isso não depende da língua do Home Assistant.
+
+### Editor visual
+
+Ao editar o painel, as duas cartas têm um editor com título, língua, prefixo das entidades e, na carta da máquina, cor e largura máxima. As outras opções (`favourites`, `names`, `rows`…) continuam a ser escritas em YAML e o editor não as apaga.
+
 ### Programas
 
-Os nomes dos programas vêm das traduções da integração hOn, na língua do Home Assistant.
+Os nomes dos programas aparecem na língua da carta (português ou inglês). Para programas que a carta não conheça, usa a tradução da integração hOn na língua do Home Assistant.
 
 Sem `favourites`, o cartão mostra todos os programas que a máquina aceita: pede a lista à integração chamando `hon.start_program` com um programa inexistente, que é recusado **antes** de enviar qualquer coisa à máquina e devolve a lista de programas válidos. A lista fica guardada no browser durante 7 dias.
 

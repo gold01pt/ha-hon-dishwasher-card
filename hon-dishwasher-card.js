@@ -11,7 +11,8 @@
 //                                Leave it out and the card finds your hOn dishwasher by itself.
 //   name: Máquina da loiça       card title
 //   colour: "#5ab4ff"            accent colour
-//   language: pt                 en or pt (default: Home Assistant's language, else English)
+//   language: pt                 pt or en, whatever Home Assistant is set to (default auto: Home Assistant's language,
+//                                else English). Also in the card's visual editor.
 //   names:                       your own programme names, by programme key, e.g.  iot_eco_bldc: Eco diário
 // Appliance card only:
 //   max_width: 380px
@@ -22,7 +23,7 @@
 //   favourites: [eco, auto_universal, ...]     programme keys (hon.start_program "program" values)
 //   programmes: [...]                          full list for "All programmes" (default: read from the machine)
 
-const HDW_VERSION = "1.0.0";
+const HDW_VERSION = "1.1.0";
 
 // ---------------------------------------------------------------------------------------------------------------
 // hOn codes for dishwashers (machMode / prPhase)
@@ -74,8 +75,10 @@ const I18N = {
     no_favs: "Escolha os seus programas favoritos com a opção favourites. Toque em “Todos os programas” para ver todos.",
   },
 };
+const LANG_ALIASES = { portugues: "pt", "português": "pt", portuguese: "pt", english: "en", ingles: "en", "inglês": "en" };
 const pickLang = (c, h) => {
-  const l = String(c.language || h?.locale?.language || h?.language || "en").toLowerCase().split(/[-_]/)[0];
+  const own = String(c.language || "").toLowerCase().trim(), forced = own && own !== "auto" ? LANG_ALIASES[own] || own : "";
+  const l = String(forced || h?.locale?.language || h?.language || "en").toLowerCase().split(/[-_]/)[0];
   return I18N[l] ? l : "en";
 };
 const tr = (lang, key, ...a) => {
@@ -83,16 +86,21 @@ const tr = (lang, key, ...a) => {
   return typeof v === "function" ? v(...a) : v;
 };
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
-// a programme key -> a readable name: yours > the hOn integration's translation (in HA's language) > made from the key
-const progLabel = (k, c, hass, nameState) => {
+// Dishwasher programme names, from the hOn integration's translations (programs_dw), so the card can show them
+// in its own language even when Home Assistant is set to another one. Typos in the Portuguese list fixed.
+const PROGS = {"en":{"59_min":"Rapid 59'","auto_care":"Auto Care","auto_care_soil":"Auto Care","auto_hygiene":"Auto Hygiene","auto_plus":"AutoPlus","auto_plus_soil":"Auto Plus","auto_rapid":"Auto Rapid","auto_rapid_soil":"Auto Rapid","auto_sensor":"Auto Sensor","auto_sensor_soil":"Auto Sensor","auto_universal":"Auto Universal 50-60°C","auto_universal_plus":"Auto Universal Plus 65-75°C","auto_universal_plus_soil":"Auto Universal Plus 65-75°C","auto_universal_soil":"Auto Universal 50-60°C","auto_wash":"Auto Wash","auto_wash_soil":"Auto Wash","classe_a_59":"A Wash 59' 65°C","delicate":"Delicate 45°C","dishwasher_care":"Limescale cleaning","eco":"Eco 45°C","eco_asynch":"Eco 45°C","eco_bldc":"Eco 45°C","eco_synch":"Eco 45°C","eco_voice":"Eco","gentle_wash":"Gentle wash","glass":"Glass","glassware":"Glassware 45°C","glass_care":"Glass Care","hygiene":"Hygiene","hygiene_plus":"Hygiene Plus 75°C","intensive":"Intensive","intensive_rapid":"Intensive Rapid","intensive_voice":"Intensive","iot_auto_sensor":"Auto Sensor","iot_auto_universal_soil":"Auto Universal 50-60°C","iot_auto_wash_soil":"Auto Wash","iot_baby_care":"Baby Care","iot_breakfast":"Breakfast","iot_checkup":"Check-Up","iot_china_crystals":"Crystals","iot_classe_a_59":"Rapid 59'","iot_cocktail_glasses":"Cocktail Glasses","iot_cocktail_glasses_soil":"Cocktail Glasses","iot_daily_care":"Daily Care","iot_daily_care_soil":"Daily Care","iot_delicate":"Delicate 45°C","iot_dinner_for_two":"Dinner for 2","iot_dinner_for_two_soil":"Dinner for 2","iot_dreft_quick_cycle":"Dreft Quick","iot_eco_asynch":"Eco 45°C","iot_eco_bldc":"Eco 45°C","iot_eco_synch":"Eco 45°C","iot_extra_hygiene":"Extra Hygiene","iot_fairy_quick_cycle":"Fairy Quick","iot_happy_hour":"Happy Hour","iot_jar_quick_cycle":"Jar Quick","iot_party":"Party","iot_party_soil":"Party","iot_pet_bowls_toys":"Pet Bowls and Toys","iot_pizza_menu":"Pizza Menu","iot_pizza_menu_soil":"Pizza Menu","iot_plastic_tupperware":"Plastic & Tupperware","iot_porcelain":"Porcelain","iot_power_mix_wash":"Power Mix Wash","iot_power_mix_wash_soil":"Power Mix Wash","iot_prewash":"Pre-wash","iot_pyrex_and_glassware":"Pyrex & Glassware","iot_rapid_29":"Rapid 29'","iot_rapid_39":"Rapid 39' 60°C","iot_single":"Single","iot_steam":"Steam 75°C","iot_super_flash":"Super Flash","iot_super_wash":"Super Wash","iot_turbopower":"TurboPower","iot_universal":"Universal 60°C","iot_voice_automatic":"Automatic","iot_voice_delicate":"Delicate 45°C","iot_voice_eco":"Eco 45°C","iot_voice_eco_bldc":"Eco 45°C","iot_voice_intensive":"Intensive 75°C","iot_voice_prewash":"Pre-wash","iot_voice_rapid_59":"Rapid 59'","iot_voice_universal":"Universal 60°C","iot_wok_grids_maxi_pans":"Special Pans (Wok, Grids & Maxi Pans)","iot_wok_grids_maxi_pans_soil":"Special Pans (Wok, Grids & Maxi Pans)","iot_yes_quick_cycle":"Yes Quick","night":"Night 55°C","prewash":"Pre-wash","rapid_20":"Rapid 20'","rapid_24":"Rapid 24'","rapid_29":"Rapid 29' 50°C","rapid_35":"Wash&Dry 35'","rapid_39":"Rapid 39' 60°C","rapid_49":"Rapid 49'","rapid_59":"Rapid 59'","sanitising":"Sanitising","silence":"Silence","silent":"Silent","silent_care":"Silent Care","smart_ai":"Smart AI","smart_ai_pro":"Smart AI Pro","smart_ai_pro_soil":"Smart AI Pro","smart_ai_rapid":"Smart AI Rapid","smart_ai_rapid_soil":"Smart AI Rapid","smart_ai_soil":"Smart AI","special":"Special","special_pw_prz":"Special","steam":"Steam 75°C","steam_plus":"Steam Plus 75°C","total_care":"Total Care 50°C","ultra_silence":"Ultra Silence 55°C","ultra_silent":"Ultra Silent 55°C","universal":"Universal 60°C","universal_plus":"Universal Plus 70°C","zone_wash":"Flex Zone Wash","zoom_39":"Zoom 39 min"},"pt":{"59_min":"Rápido 59'","auto_care":"Auto Care","auto_care_soil":"Auto Care","auto_hygiene":"Auto Higiene","auto_plus":"AutoPlus","auto_plus_soil":"Auto Plus","auto_rapid":"Auto Rápido","auto_rapid_soil":"Auto Rápido","auto_sensor":"Auto Sensor","auto_sensor_soil":"Auto Sensor","auto_universal":"Auto Universal 50-60°C","auto_universal_plus":"Auto Universal Plus 65-75°C","auto_universal_plus_soil":"Auto Universal Plus 65-75°C","auto_universal_soil":"Auto Universal 50-60°C","auto_wash":"Lavagem Auto","auto_wash_soil":"Lavagem Auto","classe_a_59":"A Wash 59' 65°C","delicate":"Delicado 45°C","dishwasher_care":"Limpeza calcário","eco":"Eco 45°C","eco_asynch":"Eco 45°C","eco_bldc":"Eco 45°C","eco_synch":"Eco 45°C","eco_voice":"Eco","gentle_wash":"Lavagem delicada","glass":"Vidro","glassware":"Vidro 45°C","glass_care":"Vidro delicados","hygiene":"Higiene","hygiene_plus":"Higiene Plus 75°C","intensive":"Intensiva","intensive_rapid":"Intensiva Rápido","intensive_voice":"Intensiva","iot_auto_sensor":"Auto Sensor","iot_auto_universal_soil":"Auto Universal 50-60°C","iot_auto_wash_soil":"Lavagem Auto","iot_baby_care":"Cuidados Bebé","iot_breakfast":"Pequeno Almoço","iot_checkup":"Check-Up","iot_china_crystals":"Cristais","iot_classe_a_59":"Rápido 59'","iot_cocktail_glasses":"Copos Cocktail","iot_cocktail_glasses_soil":"Copos Cocktail","iot_daily_care":"Cuidados Diários","iot_daily_care_soil":"Cuidados Diários","iot_delicate":"Delicados 45°C","iot_dinner_for_two":"Refeição para 2","iot_dinner_for_two_soil":"Refeição para 2","iot_dreft_quick_cycle":"Dreft Quick","iot_eco_asynch":"Eco 45°C","iot_eco_bldc":"Eco 45°C","iot_eco_synch":"Eco 45°C","iot_extra_hygiene":"Higiene Extra","iot_fairy_quick_cycle":"Fairy Quick","iot_happy_hour":"Happy Hour","iot_jar_quick_cycle":"Jar Quick","iot_party":"Party","iot_party_soil":"Party","iot_pet_bowls_toys":"Taças animais e brinquedos","iot_pizza_menu":"Menu Pizza","iot_pizza_menu_soil":"Menu Pizza","iot_plastic_tupperware":"Plásticos & Tupperware","iot_porcelain":"Porcelanas","iot_power_mix_wash":"Lavagem Power Mix","iot_power_mix_wash_soil":"Lavagem Power Mix","iot_prewash":"Pré-lavagem","iot_pyrex_and_glassware":"Pyrex & Vidros","iot_rapid_29":"Rápido 29'","iot_rapid_39":"Rápido 39' 60°C","iot_single":"Single","iot_steam":"Vapor 75°C","iot_super_flash":"Super Flash","iot_super_wash":"Super Lavagem","iot_turbopower":"TurboPower","iot_universal":"Universal 60°C","iot_voice_automatic":"Automático","iot_voice_delicate":"Delicado 45°C","iot_voice_eco":"Eco 45°C","iot_voice_eco_bldc":"Eco 45°C","iot_voice_intensive":"Intensiva 75°C","iot_voice_prewash":"Pré-lavagem","iot_voice_rapid_59":"Rapida 59'","iot_voice_universal":"Universal 60°C","iot_wok_grids_maxi_pans":"Tachos especiais (Wok, Grelhas e Tachos grandes)","iot_wok_grids_maxi_pans_soil":"Tachos especiais (Wok, Grelhas e Tachos grandes)","iot_yes_quick_cycle":"Yes Quick","night":"Noturno 55°C","prewash":"Pré-lavagem","rapid_20":"Rápido 20'","rapid_24":"Rápido 24'","rapid_29":"Rápido 29' 50°C","rapid_35":"Lavar e Secar 35'","rapid_39":"Rápido 39' 60°C","rapid_49":"Rápido 49'","rapid_59":"Rápido 59'","sanitising":"Higienização","silence":"Silencioso","silent":"Silencioso","silent_care":"Cuidado Silencioso","smart_ai":"Smart AI","smart_ai_pro":"Smart AI Pro","smart_ai_pro_soil":"Smart AI Pro","smart_ai_rapid":"Smart AI Rápido","smart_ai_rapid_soil":"Smart AI Rápido","smart_ai_soil":"Smart AI","special":"Especial","special_pw_prz":"Especial","steam":"Vapor 75°C","steam_plus":"Vapor Plus 75°C","total_care":"Total Care 50°C","ultra_silence":"Ultra Silencioso 55°C","ultra_silent":"Ultra Silencioso 55°C","universal":"Universal 60°C","universal_plus":"Universal Plus 70°C","zone_wash":"Lavagem Flex Zone","zoom_39":"Zoom 39 min"}};
+// a programme key -> a readable name: yours > the card's list in the card's language > the hOn integration's
+// translation (in Home Assistant's language) > made from the key
+const progLabel = (k, c, hass, nameState, lang) => {
   if (c.names?.[k]) return c.names[k];
+  const own = PROGS[lang]?.[k] ?? PROGS[lang]?.[String(k).replace(/_soil$/, "")];
+  if (own) return own;
   if (nameState && hass?.formatEntityState) {
     try { const t = hass.formatEntityState(nameState, k); if (t && t !== k) return t; } catch (e) {}
   }
   return String(k).replace(/^iot_/, "").replace(/_soil$/, "").replace(/_/g, " ").replace(/\b\w/g, m => m.toUpperCase());
 };
 
-// finishes of the drawn machine. Default inox = Haier XF 6C2M1PX (I-Pro Shine série 3, livre instalação, inox).
 const FINISHES = {
   inox:  { b0: "#9ea4aa", b1: "#e3e6e9", b2: "#a3a9af", top: "#8e949a", kick: "#868c92", logo: "#5b6066", recess: "#3a3e43", brush: "#ffffff" },
   white: { b0: "#e2e5e9", b1: "#f8f9fa", b2: "#dadde1", top: "#c9cdd2", kick: "#cdd1d6", logo: "#9aa0a6", recess: "#3a3e43", brush: "#ffffff" },
@@ -275,6 +283,7 @@ class HonDishwasherCard extends Base(HTMLElement) {
   }
   getCardSize() { return 10; }
   static getStubConfig() { return {}; }
+  static getConfigElement() { return Object.assign(document.createElement("hon-dishwasher-card-editor"), { _kind: "machine" }); }
   connectedCallback() {
     if (!this.shadowRoot && this._config) { this._build(); this._render(); }
     clearInterval(this._tick); this._tick = setInterval(() => this._time(), 1000);
@@ -347,9 +356,9 @@ class HonDishwasherCard extends Base(HTMLElement) {
     const nameSt = this._st(`sensor.${this._p}_program_name`), prog = nameSt?.state, code = this._val("program_code");
     try {
       const mine = JSON.parse(localStorage.getItem(`hon-dw-started-${this._p}`) || "null");
-      if (mine && powered && Date.now() - mine.at < 6 * 3600e3) return progLabel(mine.k, this._config, this._hass, nameSt);
+      if (mine && powered && Date.now() - mine.at < 6 * 3600e3) return progLabel(mine.k, this._config, this._hass, nameSt, this._lang);
     } catch (e) {}
-    if (prog && !["No program", "home_assistant"].includes(prog)) return progLabel(prog, this._config, this._hass, nameSt);
+    if (prog && !["No program", "home_assistant"].includes(prog)) return progLabel(prog, this._config, this._hass, nameSt, this._lang);
     return code != null && code !== "0" ? this._tr("prog_code", code) : "—";
   }
 
@@ -472,6 +481,7 @@ class HonDishwasherProgrammesCard extends Base(HTMLElement) {
   setConfig(c) { this._config = setup(c); if (this.isConnected && this._hass) this._build(); }
   getCardSize() { return 6; }
   static getStubConfig() { return {}; }
+  static getConfigElement() { return Object.assign(document.createElement("hon-dishwasher-card-editor"), { _kind: "programmes" }); }
   connectedCallback() { if (!this.shadowRoot && this._config && this._hass) this._build(); }
   set hass(h) {
     const first = !this._hass; this._hass = h;
@@ -502,7 +512,7 @@ class HonDishwasherProgrammesCard extends Base(HTMLElement) {
   _build() {
     const c = this._config, lang = this._lang = pickLang(c, this._hass), T = k => esc(this._tr(k)), title = this._title();
     const all = (this._list() || []).filter(k => !k.endsWith("_soil") || c.programmes), nameSt = this._hass?.states[`sensor.${this._p}_program_name`];
-    const L = k => progLabel(k, c, this._hass, nameSt);
+    const L = k => progLabel(k, c, this._hass, nameSt, lang);
     const favs = Array.isArray(c.favourites) && c.favourites.length ? c.favourites.map(String) : [];
     const btn = k => `<button class="prog" data-k="${esc(k)}">${esc(L(k))}</button>`;
     // without favourites the whole list is shown straight away (soil variants hidden: they start the same programme with a soil level)
@@ -541,7 +551,7 @@ class HonDishwasherProgrammesCard extends Base(HTMLElement) {
     r.querySelectorAll(".prog").forEach(b => b.classList.toggle("sel", b.dataset.k === k));
     r.getElementById("confirm").hidden = !k;
     if (k) r.getElementById("ask").textContent = this._tr("start_q",
-      progLabel(k, this._config, this._hass, this._hass?.states[`sensor.${this._p}_program_name`]), this._title());
+      progLabel(k, this._config, this._hass, this._hass?.states[`sensor.${this._p}_program_name`], this._lang), this._title());
   }
   async _start() {
     const k = this._sel, dev = this._dev(), n = this.shadowRoot.getElementById("note");
@@ -571,4 +581,53 @@ class HonDishwasherProgrammesCard extends Base(HTMLElement) {
 if (!customElements.get("hon-dishwasher-programmes-card")) customElements.define("hon-dishwasher-programmes-card", HonDishwasherProgrammesCard);
 if (!window.customCards.some(c => c.type === "hon-dishwasher-programmes-card"))
   window.customCards.push({ type: "hon-dishwasher-programmes-card", name: "hOn dishwasher programmes", description: "Start dishwasher programmes" });
+
+// ---------------------------------------------------------------------------------------------------------------
+// Visual editor (both cards): title, language, entity, and for the machine its finish and width.
+// Options it doesn't show (favourites, names, rows, ...) are kept as they are.
+const EDITOR_TXT = {
+  en: { name: "Title", language: "Language of the card", entity: "Entity prefix (leave empty to find it)", finish: "Machine colour",
+        max_width: "Maximum width (e.g. 380px)", auto: "Automatic (Home Assistant's language)", inox: "Stainless steel", white: "White", black: "Black" },
+  pt: { name: "Título", language: "Língua da carta", entity: "Prefixo das entidades (vazio = encontrar sozinha)", finish: "Cor da máquina",
+        max_width: "Largura máxima (ex. 380px)", auto: "Automática (língua do Home Assistant)", inox: "Inox", white: "Branco", black: "Preto" },
+};
+class HonDishwasherCardEditor extends HTMLElement {
+  setConfig(c) { this._config = { ...c }; this._render(); }
+  set hass(h) { this._hass = h; this._render(); }
+  _schema(t) {
+    const s = [
+      { name: "name", selector: { text: {} } },
+      { name: "language", selector: { select: { mode: "dropdown", options: [
+        { value: "auto", label: t.auto }, { value: "pt", label: "Português" }, { value: "en", label: "English" }] } } },
+      { name: "entity", selector: { text: {} } },
+    ];
+    if (this._kind !== "programmes") s.push(
+      { name: "finish", selector: { select: { mode: "dropdown", options: ["inox", "white", "black"].map(v => ({ value: v, label: t[v] })) } } },
+      { name: "max_width", selector: { text: {} } });
+    return s;
+  }
+  _render() {
+    if (!this._hass || !this._config) return;
+    const t = EDITOR_TXT[pickLang(this._config, this._hass)] || EDITOR_TXT.en;
+    if (!this._form) {
+      this._form = document.createElement("ha-form");
+      this._form.addEventListener("value-changed", e => {
+        const v = e.detail.value, out = { ...this._config };
+        for (const { name } of this._schema(t)) {
+          const x = v[name];
+          if (x == null || x === "" || (name === "language" && x === "auto") || (name === "finish" && x === "inox")) delete out[name];
+          else out[name] = x;
+        }
+        this._config = out;
+        this.dispatchEvent(new CustomEvent("config-changed", { detail: { config: out }, bubbles: true, composed: true }));
+      });
+      this.append(this._form);
+    }
+    this._form.hass = this._hass;
+    this._form.schema = this._schema(t);
+    this._form.data = { language: "auto", finish: "inox", ...this._config };
+    this._form.computeLabel = f => t[f.name] || f.name;
+  }
+}
+if (!customElements.get("hon-dishwasher-card-editor")) customElements.define("hon-dishwasher-card-editor", HonDishwasherCardEditor);
 console.info(`%c HON-DISHWASHER-CARD %c v${HDW_VERSION} `, "background:#5ab4ff;color:#000;font-weight:700", "background:#222;color:#fff");
