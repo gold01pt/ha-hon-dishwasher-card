@@ -13,7 +13,7 @@ O desenho segue a **Haier XF 6C2M1PX** (I-Pro Shine Série 3, livre instalação
 - **Uma vista para dentro da máquina** enquanto lava: cestos com copos e pratos, braços aspersores a rodar e água; vapor na secagem; brilhos quando termina. A fase atual (Pré-lavagem, Lavagem, Enxaguamento, Secagem) aparece em cima.
 - **Ícones** de controlo remoto, porta, **sal** e **abrilhantador** (ficam laranja quando é preciso reabastecer).
 - **Programa, estado, hora de fim** (ou hora de início, se diferido) e opções ativas (Extra secagem, Meia carga…). Desligada mostra o total de ciclos.
-- **Botões Parar e Desligar** (pedem confirmação), visíveis quando o controlo remoto está ligado.
+- **Botões Parar e Desligar na própria máquina**, dos dois lados da pega (pedem confirmação), visíveis quando o controlo remoto está ligado. Com `buttons: row` ficam em linha por cima da máquina.
 - **Cartão de programas:** os seus favoritos como botões e a lista completa, lida da própria máquina. Toque, confirme e começa.
 
 As máquinas de loiça hOn não têm pausa pela integração, por isso não há botão Pausa.
@@ -29,7 +29,7 @@ As máquinas de loiça hOn não têm pausa pela integração, por isso não há 
 ### Manual
 
 1. Copie `hon-dishwasher-card.js` para `config/www/hon-dishwasher-card.js`.
-2. Em **Definições → Painéis → ⋮ → Recursos**, adicione `/local/hon-dishwasher-card.js?v=1.1.2` como **Módulo JavaScript**.
+2. Em **Definições → Painéis → ⋮ → Recursos**, adicione `/local/hon-dishwasher-card.js?v=1.2.0` como **Módulo JavaScript**.
 3. Recarregue o browser (se atualizar o ficheiro, mude o `?v=`).
 
 ## Utilização
@@ -64,6 +64,7 @@ entity: maquina_loica
 | `max_width` | máquina | Largura máxima, ex. `380px` |
 | `rows` | máquina | Linhas da caixa: `programme`, `status`, `ends`, `options`. Por omissão todas |
 | `finish` | máquina | Cor da máquina: `inox` (omissão, como a XF 6C2M1PX), `white` ou `black` |
+| `buttons` | máquina | Botões Parar / Desligar: `machine` (na máquina, omissão) ou `row` (em linha por cima) |
 | `phases` | máquina | Nomes para códigos de fase que a carta não conheça, ex. `{6: "Enxaguamento quente"}` |
 | `favourites` | programas | Programas a mostrar como botões (chaves hOn) |
 | `programmes` | programas | Lista completa. Por omissão é lida da máquina |
@@ -81,7 +82,7 @@ Tudo passa para português: estado, fases, botões, perguntas, linhas da caixa e
 
 ### Editor visual
 
-Ao editar o painel, as duas cartas têm um editor com título, língua, prefixo das entidades e, na carta da máquina, cor e largura máxima. As outras opções (`favourites`, `names`, `rows`…) continuam a ser escritas em YAML e o editor não as apaga.
+Ao editar o painel, as duas cartas têm um editor com título, língua, prefixo das entidades e, na carta da máquina, cor, posição dos botões e largura máxima. As outras opções (`favourites`, `names`, `rows`…) continuam a ser escritas em YAML e o editor não as apaga.
 
 ### Programas
 

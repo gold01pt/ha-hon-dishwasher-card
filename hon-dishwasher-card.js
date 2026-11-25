@@ -18,12 +18,13 @@
 //   max_width: 380px
 //   rows: [programme, status, ends, options]   which lines show in the box (default all)
 //   finish: inox | white | black               colour of the drawn machine (default inox, like the XF 6C2M1PX)
+//   buttons: machine | row                     Stop / Off as round buttons on the machine (default) or as a row above it
 //   phases: { 6: "Hot rinse" }                 your own names for program_phase codes the card doesn't know
 // Programmes card only:
 //   favourites: [eco, auto_universal, ...]     programme keys (hon.start_program "program" values)
 //   programmes: [...]                          full list for "All programmes" (default: read from the machine)
 
-const HDW_VERSION = "1.1.2";
+const HDW_VERSION = "1.2.0";
 
 // ---------------------------------------------------------------------------------------------------------------
 // hOn codes for dishwashers (machMode / prPhase)
@@ -179,7 +180,8 @@ const sparkles = () => [[22, 46], [48, 60], [74, 50], [32, 70], [62, 74], [50, 3
 // status icons under the logo, the look inside over the door
 const G = { lcd: { x: 26.33, y: 8.71, w: 47.33, h: 5.88 }, strip: { x: 24.67, y: 15.3, w: 50.67 },
   inside: { x: 6.67, y: 27.65, w: 86.67, h: 61.18 },
-  icons: [[37.5, 23.4], [45.83, 23.4], [54.17, 23.4], [62.5, 23.4]] };
+  icons: [[37.5, 23.4], [45.83, 23.4], [54.17, 23.4], [62.5, 23.4]],
+  btn: { off: [13.17, 10.24], stop: [86.83, 10.24] } };
 
 const CSS = `
 :host { --fg:#ececec; --muted:#9a9a9a; --ok:#5fd38a; --warm:#ffb44f; --warn:#ffb44f; display:block; }
@@ -223,6 +225,15 @@ ha-card { display:block; background:var(--hon-card-bg,#2a2a2a); border:1px solid
 .icon[hidden] { display:none; }
 .icon ha-icon { --mdc-icon-size:68%; width:68%; color:#9a9a9a; display:grid; place-items:center; }
 .icon.lit ha-icon { color:var(--c); } .icon.warn ha-icon { color:var(--warn); } .icon.warn { box-shadow:0 0 0 2px #ffb44f66; }
+.mbtn { width:10%; aspect-ratio:1; padding:0; border-radius:50%; display:grid; place-items:center; transform:translate(-50%,-50%); cursor:pointer; z-index:3;
+  background:radial-gradient(circle at 35% 30%,#3a3f46,#101214 75%); border:.4cqw solid #ffffff2e; box-shadow:0 .6cqw 1.6cqw #0008, inset 0 .3cqw .6cqw #ffffff1a;
+  -webkit-tap-highlight-color:transparent; touch-action:manipulation; transition:transform .15s, box-shadow .2s; }
+.mbtn[hidden] { display:none; }
+.mbtn ha-icon { --mdc-icon-size:58%; width:58%; display:grid; place-items:center; }
+.mbtn.off ha-icon { color:#ff8a80; } .mbtn.stop ha-icon { color:var(--c); }
+.mbtn:hover { box-shadow:0 .6cqw 1.6cqw #0008, 0 0 0 .5cqw color-mix(in srgb, var(--c) 45%, transparent); }
+.mbtn:active { transform:translate(-50%,-50%) scale(.92); }
+.mbtn:focus-visible { outline:.5cqw solid var(--c); outline-offset:.4cqw; }
 .panel { position:absolute; left:12%; right:12%; bottom:12%; min-height:9%; box-sizing:border-box; border-radius:12px; background:#1b1d20e6;
   display:grid; align-content:center; gap:3px; padding:6px 12px; font-size:clamp(10px,2.9cqw,13.5px); box-shadow:inset 0 0 0 1px #ffffff12; z-index:2; }
 .panel:empty { display:none; }
@@ -303,16 +314,17 @@ class HonDishwasherCard extends Base(HTMLElement) {
 
   _build() {
     const c = this._config, T = k => esc(this._tr(k)); this._lang = pickLang(c, this._hass);
+    const row = c.buttons === "row";   // buttons: row = the old Stop / Off buttons above the machine
     const f = FINISHES[c.finish], icon = (id, i, mdi) =>
       `<div class="at icon" id="${id}" style="left:${G.icons[i][0]}%;top:${G.icons[i][1]}%" hidden><ha-icon icon="${mdi}"></ha-icon></div>`;
     const r = this.shadowRoot || this.attachShadow({ mode: "open" });
     r.innerHTML = `<style>${CSS}</style>
     <ha-card style="--c:${esc(c.colour)}">
       <div class="head"><span class="name">${esc(this._title())}</span><span class="pill" id="pill">${T("Off")}</span></div>
-      <div class="ctl" id="ctl" hidden>
+      ${row ? `<div class="ctl" id="ctl" hidden>
         <button id="stop"><ha-icon icon="mdi:stop"></ha-icon>${T("Stop")}</button>
         <button id="off"><ha-icon icon="mdi:power"></ha-icon>${T("off_btn")}</button>
-      </div>
+      </div>` : ""}
       <div class="ask" id="ask" hidden><span id="askT"></span><button id="askNo">${T("Cancel")}</button><button class="go" id="askYes">${T("Yes")}</button></div>
       <div class="err" id="err"></div>
       <div class="pic" id="pic" style="${c.max_width ? `--maxw:${esc(c.max_width)}` : ""}">
@@ -325,11 +337,14 @@ class HonDishwasherCard extends Base(HTMLElement) {
         <div class="at strip" style="left:${G.strip.x}%;top:${G.strip.y}%;width:${G.strip.w}%"><div class="bar" id="bar"></div></div>
         <div class="at lcd" style="left:${G.lcd.x}%;top:${G.lcd.y}%;width:${G.lcd.w}%;height:${G.lcd.h}%"><span class="t" id="lcd">--:--</span><span class="s" id="lcdS"></span></div>
         ${icon("wifi", 0, "mdi:wifi")}${icon("door", 1, "mdi:door-closed")}${icon("salt", 2, "mdi:shaker-outline")}${icon("rinse", 3, "mdi:water-plus-outline")}
+        ${row ? "" : `<button class="at mbtn off" id="off" style="left:${G.btn.off[0]}%;top:${G.btn.off[1]}%" title="${T("off_btn")}" aria-label="${T("off_btn")}" hidden><ha-icon icon="mdi:power"></ha-icon></button>
+        <button class="at mbtn stop" id="stop" style="left:${G.btn.stop[0]}%;top:${G.btn.stop[1]}%" title="${T("Stop")}" aria-label="${T("Stop")}" hidden><ha-icon icon="mdi:stop"></ha-icon></button>`}
         <div class="panel" id="rows"></div>
       </div>
     </ha-card>`;
-    r.getElementById("stop").addEventListener("click", () => this._ask("stop"));
-    r.getElementById("off").addEventListener("click", () => this._ask("off"));
+    // on the machine the buttons sit on the picture, so a tap mustn't also open the more-info dialog
+    r.getElementById("stop").addEventListener("click", e => { e.stopPropagation(); this._ask("stop"); });
+    r.getElementById("off").addEventListener("click", e => { e.stopPropagation(); this._ask("off"); });
     r.getElementById("askNo").addEventListener("click", () => this._ask(null));
     r.getElementById("askYes").addEventListener("click", () => { const w = this._asking; this._ask(null); if (w) this._send(w); });
     r.getElementById("pic").addEventListener("click", () => this.dispatchEvent(new CustomEvent("hass-more-info",
@@ -410,8 +425,10 @@ class HonDishwasherCard extends Base(HTMLElement) {
     this._t = { on, delayed: s.delayed, done, start: s.start, end: s.end, delay: s.delay, ready: powered && !on && !done };
 
     const remote = this._bin("remote_control");
-    r.getElementById("ctl").hidden = !powered || remote === false;
-    r.getElementById("stop").hidden = !on;
+    const canSend = powered && remote !== false;   // the machine ignores remote commands unless Remote Control is on
+    const ctl = r.getElementById("ctl"); if (ctl) ctl.hidden = !canSend;
+    r.getElementById("off").hidden = !canSend;
+    r.getElementById("stop").hidden = !canSend || !on;
     if (!powered) this._ask(null);
 
     const setIcon = (id, show, cls, mdi, title) => {
@@ -587,9 +604,11 @@ if (!window.customCards.some(c => c.type === "hon-dishwasher-programmes-card"))
 // Options it doesn't show (favourites, names, rows, ...) are kept as they are.
 const EDITOR_TXT = {
   en: { name: "Title", language: "Language of the card", entity: "Entity prefix (leave empty to find it)", finish: "Machine colour",
-        max_width: "Maximum width (e.g. 380px)", auto: "Automatic (Home Assistant's language)", inox: "Stainless steel", white: "White", black: "Black" },
+        max_width: "Maximum width (e.g. 380px)", auto: "Automatic (Home Assistant's language)", inox: "Stainless steel", white: "White", black: "Black",
+        buttons: "Stop / Off buttons", machine: "On the machine", row: "In a row above the machine" },
   pt: { name: "Título", language: "Língua da carta", entity: "Prefixo das entidades (vazio = encontrar sozinha)", finish: "Cor da máquina",
-        max_width: "Largura máxima (ex. 380px)", auto: "Automática (língua do Home Assistant)", inox: "Inox", white: "Branco", black: "Preto" },
+        max_width: "Largura máxima (ex. 380px)", auto: "Automática (língua do Home Assistant)", inox: "Inox", white: "Branco", black: "Preto",
+        buttons: "Botões Parar / Desligar", machine: "Na máquina", row: "Em linha por cima da máquina" },
 };
 class HonDishwasherCardEditor extends HTMLElement {
   setConfig(c) { this._config = { ...c }; this._render(); }
@@ -603,6 +622,7 @@ class HonDishwasherCardEditor extends HTMLElement {
     ];
     if (this._kind !== "programmes") s.push(
       { name: "finish", selector: { select: { mode: "dropdown", options: ["inox", "white", "black"].map(v => ({ value: v, label: t[v] })) } } },
+      { name: "buttons", selector: { select: { mode: "dropdown", options: ["machine", "row"].map(v => ({ value: v, label: t[v] })) } } },
       { name: "max_width", selector: { text: {} } });
     return s;
   }
@@ -615,7 +635,7 @@ class HonDishwasherCardEditor extends HTMLElement {
         const v = e.detail.value, out = { ...this._config };
         for (const { name } of this._schema(t)) {
           const x = v[name];
-          if (x == null || x === "" || (name === "language" && x === "auto") || (name === "finish" && x === "inox")) delete out[name];
+          if (x == null || x === "" || (name === "language" && x === "auto") || (name === "finish" && x === "inox") || (name === "buttons" && x === "machine")) delete out[name];
           else out[name] = x;
         }
         this._config = out;
@@ -625,7 +645,7 @@ class HonDishwasherCardEditor extends HTMLElement {
     }
     this._form.hass = this._hass;
     this._form.schema = this._schema(t);
-    this._form.data = { language: "auto", finish: "inox", ...this._config };
+    this._form.data = { language: "auto", finish: "inox", buttons: "machine", ...this._config };
     this._form.computeLabel = f => t[f.name] || f.name;
   }
 }

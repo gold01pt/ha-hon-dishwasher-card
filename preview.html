@@ -5,6 +5,15 @@
   .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:16px; align-items:start; }
   h3 { margin:0 0 6px; font-size:13px; color:#888; font-weight:500; }
 </style>
+<script>
+  // outside Home Assistant there's no <ha-icon>: a stand-in that draws a symbol for the icons the card uses
+  const SYM = { "mdi:power": "⏻", "mdi:stop": "■", "mdi:wifi": "📶", "mdi:wifi-off": "✕", "mdi:lock": "🔒", "mdi:door-closed": "🚪", "mdi:door-open": "🚪",
+    "mdi:shaker-outline": "🧂", "mdi:water-plus-outline": "💧" };
+  customElements.define("ha-icon", class extends HTMLElement {
+    static observedAttributes = ["icon"];
+    attributeChangedCallback() { this.textContent = SYM[this.getAttribute("icon")] || "•"; this.style.cssText = "font-size:min(2.2cqw,15px);line-height:1;color:inherit"; }
+  });
+</script>
 <script type="module" src="./hon-dishwasher-card.js"></script>
 </head><body>
 <div class="grid" id="g"></div>

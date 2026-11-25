@@ -1,5 +1,28 @@
 # Changelog
 
+## v1.2.0
+
+### Novidades
+
+- **Botões Parar e Desligar na própria máquina:** passam a ser dois botões redondos com ícone, dos dois lados da pega e do visor (Desligar à esquerda, Parar à direita), em vez da linha de botões por cima da máquina.
+  - **Desligar** aparece com a máquina ligada; **Parar** só com um ciclo a correr.
+  - Só aparecem com o controlo remoto ligado na máquina, como antes.
+  - Continuam a pedir confirmação antes de enviar o comando.
+- **Nova opção `buttons`:** `machine` (por omissão) ou `row`, para voltar aos botões em linha por cima da máquina. Também no editor visual, em **Botões Parar / Desligar**.
+
+### Como usar
+
+Não precisa de mudar nada: os botões passam para a máquina sozinhos. Para voltar ao estilo anterior:
+
+```yaml
+type: custom:hon-dishwasher-card
+buttons: row
+```
+
+### Depois de atualizar
+
+Recarregue o browser (Ctrl/Cmd + Shift + R). Na app do telemóvel: **Definições da app → Depuração → Limpar cache do frontend**.
+
 ## v1.1.2
 
 ### Novidades
