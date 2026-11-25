@@ -23,7 +23,7 @@
 //   favourites: [eco, auto_universal, ...]     programme keys (hon.start_program "program" values)
 //   programmes: [...]                          full list for "All programmes" (default: read from the machine)
 
-const HDW_VERSION = "1.1.1";
+const HDW_VERSION = "1.1.2";
 
 // ---------------------------------------------------------------------------------------------------------------
 // hOn codes for dishwashers (machMode / prPhase)

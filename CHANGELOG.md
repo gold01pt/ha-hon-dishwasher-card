@@ -1,5 +1,19 @@
 # Changelog
 
+## v1.1.2
+
+### Novidades
+
+- **Imagem da carta no README**, para se ver como fica antes de instalar (Haier XF 6C2M1PX a secar).
+- **Instruções de instalação pelo HACS / Marketplace** no README.
+- **Validação automática do HACS** no repositório, a preparar a entrada na lista oficial do Marketplace.
+
+A carta em si não muda nesta versão.
+
+### Depois de atualizar
+
+Recarregue o browser (Ctrl/Cmd + Shift + R). Na app do telemóvel: **Definições da app → Depuração → Limpar cache do frontend**.
+
 ## v1.1.1
 
 ### Correções

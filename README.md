@@ -2,10 +2,11 @@
 
 Uma carta para máquinas de lavar loiça **Haier, Candy e Hoover** ligadas ao Home Assistant pela integração **hOn** ([gvigroux/hon](https://github.com/gvigroux/hon)), no mesmo estilo da [ha-hon-appliance-card](https://github.com/spikey1965/ha-hon-appliance-card) para máquinas de lavar e secar roupa.
 
+<p align="center"><img src="https://raw.githubusercontent.com/gold01pt/ha-hon-dishwasher-card/main/images/screenshot.png" alt="A carta durante a secagem, numa Haier XF 6C2M1PX" width="420"></p>
+
 ## O que mostra
 
 O desenho segue a **Haier XF 6C2M1PX** (I-Pro Shine Série 3, livre instalação, inox): porta lisa em inox escovado, pega embutida ao centro em cima com o visor Dot Matrix lá dentro, logótipo por baixo e rodapé separado. Por dentro tem os 3 níveis do modelo de 16 conjuntos: gaveta de talheres, cesto superior e cesto inferior.
-
 
 - **O visor Dot Matrix, na pega:** o tempo restante a descontar ao segundo e a percentagem feita. Com início diferido mostra o tempo até ao fim e "Início diferido".
 - **Uma barra de luz de progresso** por baixo da pega: azul a lavar, laranja a secar, verde quando termina.
@@ -19,8 +20,16 @@ As máquinas de loiça hOn não têm pausa pela integração, por isso não há 
 
 ## Instalação
 
+### HACS / Marketplace (recomendado)
+
+1. Abra o HACS e escolha **⋮ → Custom repositories** (nas versões 2026.11 ou mais recentes: **Definições → Marketplace → Add from link**).
+2. Cole `https://github.com/gold01pt/ha-hon-dishwasher-card` e escolha o tipo **Dashboard**.
+3. Procure **hOn Dishwasher Card**, instale e recarregue o browser.
+
+### Manual
+
 1. Copie `hon-dishwasher-card.js` para `config/www/hon-dishwasher-card.js`.
-2. Em **Definições → Painéis → ⋮ → Recursos**, adicione `/local/hon-dishwasher-card.js?v=1.1.1` como **Módulo JavaScript**.
+2. Em **Definições → Painéis → ⋮ → Recursos**, adicione `/local/hon-dishwasher-card.js?v=1.1.2` como **Módulo JavaScript**.
 3. Recarregue o browser (se atualizar o ficheiro, mude o `?v=`).
 
 ## Utilização
