@@ -6,12 +6,14 @@
   h3 { margin:0 0 6px; font-size:13px; color:#888; font-weight:500; }
 </style>
 <script>
-  // outside Home Assistant there's no <ha-icon>: a stand-in that draws a symbol for the icons the card uses
-  const SYM = { "mdi:power": "⏻", "mdi:stop": "■", "mdi:wifi": "📶", "mdi:wifi-off": "✕", "mdi:lock": "🔒", "mdi:door-closed": "🚪", "mdi:door-open": "🚪",
-    "mdi:shaker-outline": "🧂", "mdi:water-plus-outline": "💧" };
+  // outside Home Assistant there's no <ha-icon>: a stand-in that draws the same Material Design Icons (Apache 2.0, Pictogrammers)
+  const MDI = {"mdi:power": "M16.56,5.44L15.11,6.89C16.84,7.94 18,9.83 18,12A6,6 0 0,1 12,18A6,6 0 0,1 6,12C6,9.83 7.16,7.94 8.88,6.88L7.44,5.44C5.36,6.88 4,9.28 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12C20,9.28 18.64,6.88 16.56,5.44M13,3H11V13H13", "mdi:stop": "M18,18H6V6H18V18Z", "mdi:wifi": "M12,21L15.6,16.2C14.6,15.45 13.35,15 12,15C10.65,15 9.4,15.45 8.4,16.2L12,21M12,3C7.95,3 4.21,4.34 1.2,6.6L3,9C5.5,7.12 8.62,6 12,6C15.38,6 18.5,7.12 21,9L22.8,6.6C19.79,4.34 16.05,3 12,3M12,9C9.3,9 6.81,9.89 4.8,11.4L6.6,13.8C8.1,12.67 9.97,12 12,12C14.03,12 15.9,12.67 17.4,13.8L19.2,11.4C17.19,9.89 14.7,9 12,9Z", "mdi:wifi-off": "M2.28,3L1,4.27L2.47,5.74C2.04,6 1.61,6.29 1.2,6.6L3,9C3.53,8.6 4.08,8.25 4.66,7.93L6.89,10.16C6.15,10.5 5.44,10.91 4.8,11.4L6.6,13.8C7.38,13.22 8.26,12.77 9.2,12.47L11.75,15C10.5,15.07 9.34,15.5 8.4,16.2L12,21L14.46,17.73L17.74,21L19,19.72M12,3C9.85,3 7.8,3.38 5.9,4.07L8.29,6.47C9.5,6.16 10.72,6 12,6C15.38,6 18.5,7.11 21,9L22.8,6.6C19.79,4.34 16.06,3 12,3M12,9C11.62,9 11.25,9 10.88,9.05L14.07,12.25C15.29,12.53 16.43,13.07 17.4,13.8L19.2,11.4C17.2,9.89 14.7,9 12,9Z", "mdi:lock": "M12,17A2,2 0 0,0 14,15C14,13.89 13.1,13 12,13A2,2 0 0,0 10,15A2,2 0 0,0 12,17M18,8A2,2 0 0,1 20,10V20A2,2 0 0,1 18,22H6A2,2 0 0,1 4,20V10C4,8.89 4.9,8 6,8H7V6A5,5 0 0,1 12,1A5,5 0 0,1 17,6V8H18M12,3A3,3 0 0,0 9,6V8H15V6A3,3 0 0,0 12,3Z", "mdi:door-closed": "M16,11H18V13H16V11M12,3H19C20.11,3 21,3.89 21,5V19H22V21H2V19H10V5C10,3.89 10.89,3 12,3M12,5V19H19V5H12Z", "mdi:door-open": "M12,3C10.89,3 10,3.89 10,5H3V19H2V21H22V19H21V5C21,3.89 20.11,3 19,3H12M12,5H19V19H12V5M5,11H7V13H5V11Z", "mdi:shaker-outline": "M16.88 4L16.88 4L19.03 6.1L13.5 10.5L12.5 9.5L16.87 4L16.88 4M16.88 2C16.3 2 15.73 2.24 15.33 2.72L9.8 9.65L13.34 13.19L20.28 7.67C21.18 6.91 21.25 5.54 20.41 4.7L18.3 2.59C17.9 2.19 17.39 2 16.88 2M9.1 10.36L8.39 11.07C8 11.46 8 12.09 8.39 12.5L10.5 14.6C10.71 14.8 10.96 14.89 11.22 14.89S11.73 14.8 11.93 14.6L12.63 13.9L9.1 10.36M6 15C5.45 15 5 15.45 5 16C5 16.55 5.45 17 6 17C6.55 17 7 16.55 7 16C7 15.45 6.55 15 6 15M9 16C8.45 16 8 16.45 8 17S8.45 18 9 18C9.55 18 10 17.55 10 17S9.55 16 9 16M4 18C3.45 18 3 18.45 3 19S3.45 20 4 20C4.55 20 5 19.55 5 19S4.55 18 4 18M7 19C6.45 19 6 19.45 6 20S6.45 21 7 21C7.55 21 8 20.55 8 20S7.55 19 7 19Z", "mdi:water-plus-outline": "M12 18C12 18.7 12.12 19.36 12.34 20C12.23 20 12.12 20 12 20C8.69 20 6 17.31 6 14C6 10 12 3.25 12 3.25S16.31 8.1 17.62 12C16.93 12.06 16.28 12.22 15.67 12.47C15 10.68 13.5 8.33 12 6.39C10 8.96 8 12.23 8 14C8 16.21 9.79 18 12 18M19 17V14H17V17H14V19H17V22H19V19H22V17H19Z"};
   customElements.define("ha-icon", class extends HTMLElement {
     static observedAttributes = ["icon"];
-    attributeChangedCallback() { this.textContent = SYM[this.getAttribute("icon")] || "•"; this.style.cssText = "font-size:calc(var(--mdc-icon-size,16px) * .8);line-height:1;color:inherit"; }
+    attributeChangedCallback() {
+      this.style.cssText = "display:inline-grid;place-items:center;line-height:0";
+      this.innerHTML = `<svg viewBox="0 0 24 24" style="width:var(--mdc-icon-size,24px);height:var(--mdc-icon-size,24px);fill:currentColor"><path d="${MDI[this.getAttribute("icon")] || ""}"/></svg>`;
+    }
   });
 </script>
 <script type="module" src="./hon-dishwasher-card.js"></script>
@@ -68,9 +70,23 @@
     card.setConfig(t === "Desligada" ? {} : { name: "Máquina da loiça", language: "pt" });
     box.append(card); g.append(box); card.hass = hassFor(s);
   }
-  const box = document.createElement("div"); box.innerHTML = "<h3>Programas</h3>";
-  const pc = document.createElement("hon-dishwasher-programmes-card");
-  pc.setConfig({ name: "Máquina da loiça", language: "pt", favourites: ["eco", "auto_universal", "intensive", "rapid_29"] });
-  box.append(pc); g.append(box); pc.hass = hassFor(scen["Desligada"].mode ? { mode: "1", phase: "0", prog: "eco" } : {});
+  const programmes = (wrap, title) => {
+    const box = document.createElement("div"); box.innerHTML = `<h3>${title}</h3>`; if (wrap) box.style.cssText = wrap;
+    const pc = document.createElement("hon-dishwasher-programmes-card");
+    pc.setConfig({ name: "Máquina da loiça", language: "pt", favourites: ["eco", "auto_universal", "intensive", "rapid_29"] });
+    box.append(pc); g.append(box); pc.hass = hassFor({ mode: "1", phase: "0", prog: "eco" });
+  };
+  programmes(null, "Programas");
+  // the Origami theme's light mode (its variables, as Home Assistant sets them)
+  const ORIGAMI_LIGHT = "--primary-text-color:#4F4C49;--ha-card-background:#FFFFFF;--blue-color:#587397;--green-color:#758671;--orange-color:#B27C43;"
+    + "--red-color:#A75050;--grey-color:#94928E;--fill-subtle:color-mix(in srgb,#8A7A64 7%,transparent);--fill-strong:color-mix(in srgb,#8A7A64 12%,transparent);"
+    + "--toggle-on:color-mix(in srgb,#4F4C49 85%,#FFFFFF);--ha-card-box-shadow:0 1px 2px rgba(138,122,100,.12),0 6px 14px -6px rgba(138,122,100,.25);"
+    + "--primary-font-family:'Montserrat',sans-serif;--ha-card-border-radius:22px;--radius-ratio:.35;background:#F6F4F1;padding:8px;border-radius:16px;color:#4F4C49";
+  {
+    const box = document.createElement("div"); box.innerHTML = "<h3>A secar, com o tema Origami (claro)</h3>"; box.style.cssText = ORIGAMI_LIGHT;
+    const card = document.createElement("hon-dishwasher-card"); card.setConfig({ name: "Máquina da loiça", language: "pt" });
+    box.append(card); g.append(box); card.hass = hassFor(scen["A secar"]);
+  }
+  programmes(ORIGAMI_LIGHT, "Programas, com o tema Origami (claro)");
 </script>
 </body></html>

@@ -1,5 +1,27 @@
 # Changelog
 
+## v1.3.0
+
+### Novidades
+
+- **Estilo Origami** nas duas cartas ([hazymorning/origami](https://github.com/hazymorning/origami)):
+  - letra Montserrat, cantos a 35% da altura de cada controlo e as sombras dos cartões da Origami;
+  - o estado num **chip com ponto de cor** (azul a lavar, laranja a secar, verde no fim);
+  - a fase e a caixa de informação em **painéis desfocados**, como os cartões da Origami;
+  - os ícones de estado e os botões **Desligar / Parar** em quadrados de cantos arredondados;
+  - no cartão de programas, os programas como **mosaicos da Origami**, preenchidos com a cor ativa quando escolhidos, e a pesquisa e a confirmação no mesmo estilo.
+- Com o **tema Origami** ativo, as cartas usam as cores, a letra e os cantos do tema, em claro e em escuro. Sem ele, usam os tons escuros da Origami.
+- A cor de destaque por omissão passa a ser o **azul do tema** (como na Origami). Quem tem `colour` definido mantém a sua.
+- O desenho da máquina e o visor Dot Matrix não mudam.
+- Imagem nova no README, em modo escuro e com o tema Origami claro.
+
+### Letra
+A Montserrat só aparece se estiver carregada no Home Assistant (como pede a Origami). Sem ela, as cartas usam a letra do sistema.
+
+### Depois de atualizar
+
+Recarregue o browser (Ctrl/Cmd + Shift + R). Na app do telemóvel: **Definições da app → Depuração → Limpar cache do frontend**.
+
 ## v1.2.1
 
 ### Correções

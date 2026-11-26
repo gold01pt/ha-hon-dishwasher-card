@@ -2,7 +2,7 @@
 
 Uma carta para máquinas de lavar loiça **Haier, Candy e Hoover** ligadas ao Home Assistant pela integração **hOn** ([gvigroux/hon](https://github.com/gvigroux/hon)), no mesmo estilo da [ha-hon-appliance-card](https://github.com/spikey1965/ha-hon-appliance-card) para máquinas de lavar e secar roupa.
 
-<p align="center"><img src="https://raw.githubusercontent.com/gold01pt/ha-hon-dishwasher-card/main/images/screenshot.png" alt="A carta durante a secagem, numa Haier XF 6C2M1PX" width="420"></p>
+<p align="center"><img src="https://raw.githubusercontent.com/gold01pt/ha-hon-dishwasher-card/main/images/screenshot.png" alt="A carta a lavar em modo escuro e a secar com o tema Origami claro, numa Haier XF 6C2M1PX" width="640"></p>
 
 ## O que mostra
 
@@ -18,6 +18,10 @@ O desenho segue a **Haier XF 6C2M1PX** (I-Pro Shine Série 3, livre instalação
 
 As máquinas de loiça hOn não têm pausa pela integração, por isso não há botão Pausa.
 
+## Estilo
+
+As cartas seguem o estilo **[Origami](https://github.com/hazymorning/origami)**: letra Montserrat, cantos a 35% da altura de cada controlo, o estado num chip com ponto de cor, a caixa de informação e a fase em painéis desfocados, os ícones e os botões Desligar / Parar em quadrados de cantos arredondados, e os programas como os mosaicos da Origami (preenchidos com a cor ativa quando escolhidos). Com o tema Origami ativo, seguem as cores dele em claro e em escuro. Sem ele, usam os tons escuros da Origami. O desenho da máquina e o visor Dot Matrix não mudam.
+
 ## Instalação
 
 ### HACS / Marketplace (recomendado)
@@ -29,7 +33,7 @@ As máquinas de loiça hOn não têm pausa pela integração, por isso não há 
 ### Manual
 
 1. Copie `hon-dishwasher-card.js` para `config/www/hon-dishwasher-card.js`.
-2. Em **Definições → Painéis → ⋮ → Recursos**, adicione `/local/hon-dishwasher-card.js?v=1.2.1` como **Módulo JavaScript**.
+2. Em **Definições → Painéis → ⋮ → Recursos**, adicione `/local/hon-dishwasher-card.js?v=1.3.0` como **Módulo JavaScript**.
 3. Recarregue o browser (se atualizar o ficheiro, mude o `?v=`).
 
 ## Utilização
@@ -58,7 +62,7 @@ entity: maquina_loica
 |---|---|---|
 | `entity` | ambas | Início dos IDs das entidades (por omissão: encontrada automaticamente, senão `dish_washer`) |
 | `name` | ambas | Título |
-| `colour` | ambas | Cor de destaque, ex. `"#5ab4ff"` |
+| `colour` | ambas | Cor de destaque, ex. `"#93ADCF"` (por omissão o azul do tema, como na Origami) |
 | `language` | ambas | `pt` ou `en`, seja qual for a língua do Home Assistant (por omissão `auto`: a língua do HA) |
 | `names` | ambas | Os seus nomes para programas, por chave: `iot_eco_bldc: Eco diário` |
 | `max_width` | máquina | Largura máxima, ex. `380px` |
